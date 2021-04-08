@@ -331,7 +331,7 @@ if __name__ == "__main__":
     print('task a: Forward and backward in straight lines or with different steering angles\n')
     print('task b: Parallel-parking left and right\n')
     print('task c: Three-point turning (K-turning) with initial turn to the left or right\n')
-    print('task d: Stop the car and back to initial state')
+    print('task d: Stop the car and back to initial state\n')
     print('task e: End the whole task')
     while run:
         cmd = input('Please choose a task(a/b/c/d/e): ')
