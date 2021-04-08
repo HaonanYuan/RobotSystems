@@ -44,7 +44,7 @@ for pin in motor_speed_pins:
     pin.prescaler(PRESCALER)
 
 
-@log_on_start(logging.DEBUG, "set motor speed ")
+# @log_on_start(logging.DEBUG, "set motor speed ")
 def set_motor_speed(motor, speed):
     global cali_speed_value, cali_dir_value
     motor -= 1
@@ -326,7 +326,7 @@ def maneuvering_d():
 
 
 if __name__ == "__main__":
-    run = True
+    """run = True
     print('command info:\n')
     print('task a: Forward and backward in straight lines or with different steering angles\n')
     print('task b: Parallel-parking left and right\n')
@@ -352,10 +352,10 @@ if __name__ == "__main__":
             print('Task will be end!')
             run = False
         else:
-            print('Please choose a task(a/b/c/d): ')
-"""     try:
+            print('Please choose a task(a/b/c/d): ')"""
+    try:
          # dir_servo_angle_calibration(-10)
-         while 1:
-             test()
-     finally:
-         stop()"""
+        while 1:
+            test()
+    finally:
+        stop()
