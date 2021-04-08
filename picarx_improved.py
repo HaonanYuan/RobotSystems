@@ -1,5 +1,9 @@
+from ezblock import __reset_mcu__
+
 try:
     from ezblock import *
+    __reset_mcu__()
+    time.sleep(0.01)
 except ImportError:
     print(
         "This computer does not appear to be a PiCar - X system(/ opt / ezblock is not present ) . Shadowing hardware "
@@ -31,7 +35,7 @@ S1 = ADC('A1')
 S2 = ADC('A2')
 
 Servo_dir_flag = 1
-dir_cal_value = 0
+dir_cal_value = -10
 cam_cal_value_1 = 0
 cam_cal_value_2 = 0
 motor_direction_pins = [left_rear_dir_pin, right_rear_dir_pin]
@@ -218,7 +222,7 @@ def maneuvering_a(cmd):
         backward(50)
     # forward turn right
     elif cmd == 'fright':
-        set_dir_servo_angle(60)
+        set_dir_servo_angle(30)
         forward(50, 30)
     # forward turn left
     elif cmd == 'fleft':
@@ -226,7 +230,7 @@ def maneuvering_a(cmd):
         forward(50, (-30))
     # backward turn right
     elif cmd == 'bright':
-        set_dir_servo_angle(60)
+        set_dir_servo_angle(30)
         backward(50, 30)
     # backward turn left
     elif cmd == 'bleft':
@@ -288,7 +292,7 @@ def maneuvering_c(cmd):
         time.sleep(1)
         # third step
         stop()
-        set_dir_servo_angle((-30))
+        set_dir_servo_angle((-10))
         forward(50)
         time.sleep(1)
         set_dir_servo_angle(0)
@@ -311,7 +315,7 @@ def maneuvering_c(cmd):
         time.sleep(1)
         # third step
         stop()
-        set_dir_servo_angle(30)
+        set_dir_servo_angle(10)
         forward(50)
         time.sleep(1)
         set_dir_servo_angle(0)
@@ -334,7 +338,7 @@ if __name__ == "__main__":
     print('task b: Parallel-parking left and right\n')
     print('task c: Three-point turning (K-turning) with initial turn to the left or right\n')
     print('task d: Stop the car and back to initial state\n')
-    print('task e: End the whole task')
+    print('task e: End the whole task\n')
     while run:
         cmd = input('Please choose a task(a/b/c/d/e): ')
         if cmd == 'a':
