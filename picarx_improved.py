@@ -218,7 +218,7 @@ def maneuvering_a(cmd):
         backward(50)
     # forward turn right
     elif cmd == 'fright':
-        set_dir_servo_angle(30)
+        set_dir_servo_angle(60)
         forward(50, 30)
     # forward turn left
     elif cmd == 'fleft':
@@ -226,7 +226,7 @@ def maneuvering_a(cmd):
         forward(50, (-30))
     # backward turn right
     elif cmd == 'bright':
-        set_dir_servo_angle(30)
+        set_dir_servo_angle(60)
         backward(50, 30)
     # backward turn left
     elif cmd == 'bleft':
