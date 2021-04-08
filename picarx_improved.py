@@ -5,9 +5,14 @@ except ImportError:
         "This computer does not appear to be a PiCar - X system(/ opt / ezblock is not present ) . Shadowing hardware "
         "calls with substitute functions ")
     from sim_ezblock import *
-    # from sim_ezblock import PWM
 
 import time
+import logging
+from logdecorator import log_on_start, log_on_end, log_on_error
+
+logging_format = "%(asctime)s:%(message)s"
+logging.basicConfig(format=logging_format, level=logging.INFO, datefmt="%H:%M:%S")
+logging.getLogger().setLevel(logging.DEBUG)
 
 PERIOD = 4095
 PRESCALER = 10
@@ -39,6 +44,7 @@ for pin in motor_speed_pins:
     pin.prescaler(PRESCALER)
 
 
+@log_on_start(logging.DEBUG, "set motor speed ")
 def set_motor_speed(motor, speed):
     global cali_speed_value, cali_dir_value
     motor -= 1
@@ -127,14 +133,36 @@ def set_power(speed):
     set_motor_speed(2, speed)
 
 
-def backward(speed):
-    set_motor_speed(1, speed)
-    set_motor_speed(2, speed)
+def backward(speed, angle=0):
+    if angle == 0:
+        set_motor_speed(1, speed)
+        set_motor_speed(2, speed)
+    elif angle > 0:
+        # car will turn right
+        # right rear wheel will slower than left one
+        set_motor_speed(1, speed)
+        set_motor_speed(2, (angle / 90) * speed)
+    elif angle < 0:
+        # car will turn left
+        # right rear wheel will faster than left one
+        set_motor_speed(1, abs((angle / 90)) * speed)
+        set_motor_speed(2, speed)
 
 
-def forward(speed):
-    set_motor_speed(1, -1 * speed)
-    set_motor_speed(2, -1 * speed)
+def forward(speed, angle=0):
+    if angle == 0:
+        set_motor_speed(1, -1 * speed)
+        set_motor_speed(2, -1 * speed)
+    elif angle > 0:
+        # car will turn right
+        # right rear wheel will slower than left one
+        set_motor_speed(1, -1 * speed)
+        set_motor_speed(2, -1 * (angle / 90) * speed)
+    elif angle < 0:
+        # car will turn left
+        # right rear wheel will faster than left one
+        set_motor_speed(1, -1 * abs((angle / 90)) * speed)
+        set_motor_speed(2, -1 * speed)
 
 
 def stop():
@@ -187,12 +215,23 @@ def maneuvering_a(cmd):
     # backward
     elif cmd == 'backward':
         backward(50)
-    # turn right
-    elif cmd == 'right':
+    # forward turn right
+    elif cmd == 'fright':
         set_dir_servo_angle(30)
-    # turn left
-    elif cmd == 'left':
+        forward(50, 30)
+    # forward turn left
+    elif cmd == 'fleft':
         set_dir_servo_angle((-30))
+        forward(50, (-30))
+    # backward turn right
+    elif cmd == 'bright':
+        set_dir_servo_angle(30)
+        backward(50, 30)
+    # backward turn left
+    elif cmd == 'bleft':
+        set_dir_servo_angle((-30))
+        backward(50, (-30))
+
     # stop
     elif cmd == 'stop':
         stop()
@@ -295,9 +334,9 @@ if __name__ == "__main__":
     print('task d: Stop the car and back to initial state')
     print('task e: End the whole task')
     while run:
-        cmd = input('Please choose a task(a/b/c/d): ')
+        cmd = input('Please choose a task(a/b/c/d/e): ')
         if cmd == 'a':
-            d_cmd = input('Choose a command(forward/backward/left/right): ')
+            d_cmd = input('Choose a command(forward/backward/fleft/fright/bleft/bright): ')
             maneuvering_a(d_cmd)
         elif cmd == 'b':
             d_cmd = input('Choose a command(left/right): ')
@@ -308,6 +347,9 @@ if __name__ == "__main__":
         elif cmd == 'd':
             maneuvering_d()
         elif cmd == 'e':
+            stop()
+            set_dir_servo_angle(0)
+            print('Task will be end!')
             run = False
         else:
             print('Please choose a task(a/b/c/d): ')

@@ -1,41 +1,29 @@
 # -*- coding: utf-8 -*-
-import logging
-
-import math
-import smbus2
-from smbus2 import SMBus
-# import RPi.GPIO as GPIO
-
-timer = [
-    {
-        "arr": 0
-    }
-] * 4
 
 
 class _Basic_class(object):
     _class_name = '_Basic_class'
-    DEBUG_LEVELS = {'debug': logging.DEBUG,
+    """DEBUG_LEVELS = {'debug': logging.DEBUG,
                     'info': logging.INFO,
                     'warning': logging.WARNING,
                     'error': logging.ERROR,
                     'critical': logging.CRITICAL,
-                    }
+                    }"""
     DEBUG_NAMES = ['critical', 'error', 'warning', 'info', 'debug']
 
     def __init__(self):
         self._debug_level = 0
-        self.logger = logging.getLogger(self._class_name)
-        self.ch = logging.StreamHandler()
+        """self.logger = logging.getLogger(self._class_name)
+        self.ch = logging.StreamHandler()"""
         form = "%(asctime)s	[%(levelname)s]	%(message)s"
-        self.formatter = logging.Formatter(form)
+        """self.formatter = logging.Formatter(form)
         self.ch.setFormatter(self.formatter)
         self.logger.addHandler(self.ch)
         self._debug = self.logger.debug
         self._info = self.logger.info
         self._warning = self.logger.warning
         self._error = self.logger.error
-        self._critical = self.logger.critical
+        self._critical = self.logger.critical"""
 
     @property
     def debug(self):
@@ -51,9 +39,9 @@ class _Basic_class(object):
             raise ValueError(
                 'Debug value must be 0(critical), 1(error), 2(warning), 3(info) or 4(debug), not \"{0}\".'.format(
                     debug))
-        self.logger.setLevel(self.DEBUG_LEVELS[self._debug_level])
+        """self.logger.setLevel(self.DEBUG_LEVELS[self._debug_level])
         self.ch.setLevel(self.DEBUG_LEVELS[self._debug_level])
-        self._debug('Set logging level to [%s]' % self._debug_level)
+        self._debug('Set logging level to [%s]' % self._debug_level)"""
 
     def run_command(self, cmd):
         import subprocess
@@ -77,31 +65,31 @@ class I2C(_Basic_class):
     def __init__(self, *args, **kargs):  # *args表示位置参数（形式参数），可无，； **kargs表示默认值参数，可无。
         super().__init__()
         self._bus = 1
-        self._smbus = SMBus(self._bus)
+        """self._smbus = SMBus(self._bus)"""
 
     def _i2c_write_byte(self, addr, data):  # i2C 写系列函数
-        self._debug("_i2c_write_byte: [0x{:02X}] [0x{:02X}]".format(addr, data))
-        return self._smbus.write_byte(addr, data)
+        """self._debug("_i2c_write_byte: [0x{:02X}] [0x{:02X}]".format(addr, data))
+        return self._smbus.write_byte(addr, data)"""
 
     def _i2c_write_byte_data(self, addr, reg, data):
-        self._debug("_i2c_write_byte_data: [0x{:02X}] [0x{:02X}] [0x{:02X}]".format(addr, reg, data))
-        return self._smbus.write_byte_data(addr, reg, data)
+        """self._debug("_i2c_write_byte_data: [0x{:02X}] [0x{:02X}] [0x{:02X}]".format(addr, reg, data))
+        return self._smbus.write_byte_data(addr, reg, data)"""
 
     def _i2c_write_word_data(self, addr, reg, data):
-        self._debug("_i2c_write_word_data: [0x{:02X}] [0x{:02X}] [0x{:04X}]".format(addr, reg, data))
-        return self._smbus.write_word_data(addr, reg, data)
+        """self._debug("_i2c_write_word_data: [0x{:02X}] [0x{:02X}] [0x{:04X}]".format(addr, reg, data))
+        return self._smbus.write_word_data(addr, reg, data)"""
 
     def _i2c_write_i2c_block_data(self, addr, reg, data):
-        self._debug("_i2c_write_i2c_block_data: [0x{:02X}] [0x{:02X}] {}".format(addr, reg, data))
-        return self._smbus.write_i2c_block_data(addr, reg, data)
+        """self._debug("_i2c_write_i2c_block_data: [0x{:02X}] [0x{:02X}] {}".format(addr, reg, data))
+        return self._smbus.write_i2c_block_data(addr, reg, data)"""
 
     def _i2c_read_byte(self, addr):  # i2C 读系列函数
-        self._debug("_i2c_read_byte: [0x{:02X}]".format(addr))
-        return self._smbus.read_byte(addr)
+        """self._debug("_i2c_read_byte: [0x{:02X}]".format(addr))
+        return self._smbus.read_byte(addr)"""
 
     def _i2c_read_i2c_block_data(self, addr, reg, num):
-        self._debug("_i2c_read_i2c_block_data: [0x{:02X}] [0x{:02X}] [{}]".format(addr, reg, num))
-        return self._smbus.read_i2c_block_data(addr, reg, num)
+        """self._debug("_i2c_read_i2c_block_data: [0x{:02X}] [0x{:02X}] [{}]".format(addr, reg, num))
+        return self._smbus.read_i2c_block_data(addr, reg, num)"""
 
     def is_ready(self, addr):
         addresses = self.scan()
@@ -115,7 +103,7 @@ class I2C(_Basic_class):
         _, output = self.run_command(cmd)  # 调用basic中的方法，在linux中运行cmd指令，并返回运行后的内容
 
         outputs = output.split('\n')[1:]  # 以回车符为分隔符，分割第二行之后的所有行
-        self._debug("outputs")
+        """self._debug("outputs")"""
         addresses = []
         for tmp_addresses in outputs:
             if tmp_addresses == "":
@@ -125,7 +113,7 @@ class I2C(_Basic_class):
             for address in tmp_addresses:
                 if address != '--':
                     addresses.append(int(address, 16))
-        self._debug("Conneceted i2c device: %s" % addresses)  # append以列表的方式添加address到addresses中
+        """self._debug("Conneceted i2c device: %s" % addresses)"""  # append以列表的方式添加address到addresses中
         return addresses
 
     def send(self, send, addr, timeout=0):  # 发送数据，addr为从机地址，send为数据
@@ -164,7 +152,7 @@ class I2C(_Basic_class):
             self._i2c_write_i2c_block_data(addr, reg, data)
 
     def recv(self, recv, addr=0x00, timeout=0):  # 接收数据
-        if isinstance(recv, int):  # 将recv转化为二进制数
+        """if isinstance(recv, int):  # 将recv转化为二进制数
             result = bytearray(recv)
         elif isinstance(recv, bytearray):
             result = recv
@@ -172,7 +160,7 @@ class I2C(_Basic_class):
             return False
         for i in range(len(result)):
             result[i] = self._i2c_read_byte(addr)
-        return result
+        return result"""
 
     def mem_write(self, data, addr, memaddr, timeout=5000, addr_size=8):  # memaddr match to chn
         if isinstance(data, bytearray):
@@ -194,14 +182,14 @@ class I2C(_Basic_class):
         self._i2c_write_i2c_block_data(addr, memaddr, data_all)
 
     def mem_read(self, data, addr, memaddr, timeout=5000, addr_size=8):  # 读取数据
-        if isinstance(data, int):
+        """if isinstance(data, int):
             num = data
         elif isinstance(data, bytearray):
             num = len(data)
         else:
             return False
         result = bytearray(self._i2c_read_i2c_block_data(addr, memaddr, num))
-        return result
+        return result"""
 
     def readfrom_mem_into(self, addr, memaddr, buf):
         buf = self.mem_read(len(buf), addr, memaddr)
@@ -218,10 +206,10 @@ class Servo(_Basic_class):
 
     def __init__(self, pwm):
         super().__init__()
-        self.pwm = pwm
-        self.pwm.period(4095)
-        prescaler = int(float(self.pwm.CLOCK) / self.pwm._freq / self.pwm.period())
-        self.pwm.prescaler(prescaler)
+        # self.pwm = pwm
+        # self.pwm.period(4095)
+        # prescaler = int(float(self.pwm.CLOCK) / self.pwm._freq / self.pwm.period())
+        # self.pwm.prescaler(prescaler)
         # self.angle(90)
 
     # angle ranges -90 to 90 degrees
@@ -233,12 +221,12 @@ class Servo(_Basic_class):
         if angle > 90:
             angle = 90
         High_level_time = self.map(angle, -90, 90, self.MIN_PW, self.MAX_PW)
-        self._debug("High_level_time: %f" % High_level_time)
+        # self._debug("High_level_time: %f" % High_level_time)
         pwr = High_level_time / 20000
-        self._debug("pulse width rate: %f" % pwr)
-        value = int(pwr * self.pwm.period())
-        self._debug("pulse width value: %d" % value)
-        self.pwm.pulse_width(value)
+        # self._debug("pulse width rate: %f" % pwr)
+        # value = int(pwr * self.pwm.period())
+        # self._debug("pulse width value: %d" % value)
+        # self.pwm.pulse_width(value)
 
 
 class PWM(I2C):
@@ -266,10 +254,10 @@ class PWM(I2C):
             self.ADDR = 0x15
 
         self.debug = debug
-        self._debug("PWM address: {:02X}".format(self.ADDR))
+        # self._debug("PWM address: {:02X}".format(self.ADDR))
         self.channel = channel
         self.timer = int(channel/4)
-        self.bus = smbus2.SMBus(1)
+        # self.bus = smbus2.SMBus(1)
         self._pulse_width = 0
         self._freq = 50
         self.freq(50)
@@ -277,35 +265,11 @@ class PWM(I2C):
     def i2c_write(self, reg, value):
         value_h = value >> 8
         value_l = value & 0xff
-        self._debug("i2c write: [0x%02X, 0x%02X, 0x%02X, 0x%02X]"%(self.ADDR, reg, value_h, value_l))
+        # self._debug("i2c write: [0x%02X, 0x%02X, 0x%02X, 0x%02X]"%(self.ADDR, reg, value_h, value_l))
         self.send([reg, value_h, value_l], self.ADDR)
 
     def freq(self, *freq):
-        if len(freq) == 0:
-            return self._freq
-        else:
-            self._freq = int(freq[0])
-            # [prescaler,arr] list
-            result_ap = []
-            # accuracy list
-            result_acy = []
-            # middle value for equal arr prescaler
-            st = int(math.sqrt(self.CLOCK/self._freq))
-            # get -5 value as start
-            st -= 5
-            # prevent negetive value
-            if st <= 0:
-                st = 1
-            for psc in range(st,st+10):
-                arr = int(self.CLOCK/self._freq/psc)
-                result_ap.append([psc, arr])
-                result_acy.append(abs(self._freq-self.CLOCK/psc/arr))
-            i = result_acy.index(min(result_acy))
-            psc = result_ap[i][0]
-            arr = result_ap[i][1]
-            self._debug("prescaler: %s, period: %s"%(psc, arr))
-            self.prescaler(psc)
-            self.period(arr)
+        pass
 
     def prescaler(self, *prescaler):
         if len(prescaler) == 0:
@@ -313,18 +277,19 @@ class PWM(I2C):
         else:
             self._prescaler = int(prescaler[0]) - 1
             reg = self.REG_PSC + self.timer
-            self._debug("Set prescaler to: %s"%self._prescaler)
+            # self._debug("Set prescaler to: %s"%self._prescaler)
             self.i2c_write(reg, self._prescaler)
 
     def period(self, *arr):
-        global timer
+        """global timer
         if len(arr) == 0:
             return timer[self.timer]["arr"]
         else:
             timer[self.timer]["arr"] = int(arr[0]) - 1
             reg = self.REG_ARR + self.timer
-            self._debug("Set arr to: %s"%timer[self.timer]["arr"])
-            self.i2c_write(reg, timer[self.timer]["arr"])
+            # self._debug("Set arr to: %s"%timer[self.timer]["arr"])
+            self.i2c_write(reg, timer[self.timer]["arr"])"""
+        pass
 
     def pulse_width(self, *pulse_width):
         if len(pulse_width) == 0:
@@ -335,7 +300,7 @@ class PWM(I2C):
             self.i2c_write(reg, self._pulse_width)
 
     def pulse_width_percent(self, *pulse_width_percent):
-        global timer
+        """global timer
         if len(pulse_width_percent) == 0:
             return self._pulse_width_percent
         else:
@@ -343,17 +308,18 @@ class PWM(I2C):
             temp = self._pulse_width_percent / 100.0
             print(temp)
             pulse_width = temp * timer[self.timer]["arr"]
-            self.pulse_width(pulse_width)
+            self.pulse_width(pulse_width)"""
+        pass
 
 
-"""class Pin(_Basic_class):
-    OUT = GPIO.OUT
+class Pin(_Basic_class):
+    """OUT = GPIO.OUT
     IN = GPIO.IN
     IRQ_FALLING = GPIO.FALLING
     IRQ_RISING = GPIO.RISING
     IRQ_RISING_FALLING = GPIO.BOTH
     PULL_UP = GPIO.PUD_UP
-    PULL_DOWN = GPIO.PUD_DOWN
+    PULL_DOWN = GPIO.PUD_DOWN"""
     PULL_NONE = None
 
     _dict = {
@@ -416,10 +382,10 @@ class PWM(I2C):
 
     def __init__(self, *value):
         super().__init__()
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
+        """GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)"""
 
-        self.check_board_type()
+        """self.check_board_type()
 
         if len(value) > 0:
             pin = value[0]
@@ -444,40 +410,43 @@ class PWM(I2C):
             self._error('Pin should be in %s, not %s' % (self._dict.keys(), pin))
         self._value = 0
         self.init(mode, pull=setup)
-        self._info("Pin init finished.")
+        self._info("Pin init finished.")"""
 
     def check_board_type(self):
-        type_pin = self.dict()["BOARD_TYPE"]
+        """type_pin = self.dict()["BOARD_TYPE"]
         GPIO.setup(type_pin, GPIO.IN)
         if GPIO.input(type_pin) == 0:
             self._dict = self._dict_1
         else:
-            self._dict = self._dict_2
+            self._dict = self._dict_2"""
+        pass
 
     def init(self, mode, pull=PULL_NONE):
-        self._pull = pull
+        """self._pull = pull
         self._mode = mode
         if mode != None:
             if pull != None:
                 GPIO.setup(self._pin, mode, pull_up_down=pull)
             else:
-                GPIO.setup(self._pin, mode)
+                GPIO.setup(self._pin, mode)"""
+        pass
 
     def dict(self, *_dict):
-        if len(_dict) == 0:
+        """if len(_dict) == 0:
             return self._dict
         else:
             if isinstance(_dict, dict):
                 self._dict = _dict
             else:
                 self._error(
-                    'argument should be a pin dictionary like {"my pin": ezblock.Pin.cpu.GPIO17}, not %s' % _dict)
+                    'argument should be a pin dictionary like {"my pin": ezblock.Pin.cpu.GPIO17}, not %s' % _dict)"""
+        pass
 
     def __call__(self, value):
         return self.value(value)
 
     def value(self, *value):
-        if len(value) == 0:
+        """if len(value) == 0:
             if self._mode in [None, self.OUT]:
                 self.mode(self.IN)
             result = GPIO.input(self._pin)
@@ -487,8 +456,8 @@ class PWM(I2C):
             value = value[0]
             if self._mode in [None, self.IN]:
                 self.mode(self.OUT)
-            GPIO.output(self._pin, value)
-            return value
+            GPIO.output(self._pin, value)"""
+        return 0
 
     def on(self):
         return self.value(1)
@@ -503,7 +472,7 @@ class PWM(I2C):
         return self.off()
 
     def mode(self, *value):
-        if len(value) == 0:
+        """if len(value) == 0:
             return (self._mode, self._pull)
         else:
             self._mode = value[0]
@@ -511,20 +480,25 @@ class PWM(I2C):
                 GPIO.setup(self._pin, self._mode)
             elif len(value) == 2:
                 self._pull = value[1]
-                GPIO.setup(self._pin, self._mode, self._pull)
+                GPIO.setup(self._pin, self._mode, self._pull)"""
+        pass
 
     def pull(self, *value):
-        return self._pull
+        """return self._pull"""
+        pass
 
     def irq(self, handler=None, trigger=None, bouncetime=200):
-        self.mode(self.IN)
-        GPIO.add_event_detect(self._pin, trigger, callback=handler, bouncetime=bouncetime)
+        """self.mode(self.IN)
+        GPIO.add_event_detect(self._pin, trigger, callback=handler, bouncetime=bouncetime)"""
+        pass
 
     def name(self):
-        return "GPIO%s" % self._pin
+        """return "GPIO%s" % self._pin"""
+        pass
 
     def names(self):
-        return [self.name, self._board_name]
+        """return [self.name, self._board_name]"""
+        pass
 
     class cpu(object):
         GPIO17 = 17
@@ -547,7 +521,7 @@ class PWM(I2C):
         GPIO21 = 21
 
         def __init__(self):
-            pass"""
+            pass
 
 
 class ADC(I2C):
@@ -561,14 +535,15 @@ class ADC(I2C):
             else:
                 raise ValueError("ADC channel should be between [A0, A7], not {0}".format(chn))
         if chn < 0 or chn > 7:  # 判断取出来的数字是否在0~7的范围内
-            self._error('Incorrect channel range')
+            # self._error('Incorrect channel range')
+            pass
         chn = 7 - chn
         self.chn = chn | 0x10  # 给从机地址
         self.reg = 0x40 + self.chn
         # self.bus = smbus.SMBus(1)
 
     def read(self):  # adc通道读取数---写一次数据，读取两次数据 （读取的数据范围是0~4095）
-        self._debug("Write 0x%02X to 0x%02X" % (self.chn, self.ADDR))
+        """self._debug("Write 0x%02X to 0x%02X" % (self.chn, self.ADDR))
         # self.bus.write_byte(self.ADDR, self.chn)      # 写入数据
         self.send([self.chn, 0, 0], self.ADDR)
 
@@ -581,8 +556,8 @@ class ADC(I2C):
         value_l = self.recv(1, self.ADDR)[0]  # 读取数据（读两次）
 
         value = (value_h << 8) + value_l
-        self._debug("Read value: %s" % value)
-        return value
+        self._debug("Read value: %s" % value)"""
+        return 0
 
     def read_voltage(self):  # 将读取的数据转化为电压值（0~3.3V）
-        return self.read * 3.3 / 4095
+        return 0
