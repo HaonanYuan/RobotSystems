@@ -211,7 +211,7 @@ def test():
 def maneuvering_a(cmd):
     # forward
     if cmd == 'forward':
-        set_dir_servo_angle(0)
+        # set_dir_servo_angle(0)
         forward(50)
     # backward
     elif cmd == 'backward':
@@ -323,7 +323,7 @@ def maneuvering_c(cmd):
 
 def maneuvering_d():
     stop()
-    set_dir_servo_angle(0)
+    set_dir_servo_angle(15)
 
 
 if __name__ == "__main__":
