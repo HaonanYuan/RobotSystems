@@ -326,7 +326,7 @@ def maneuvering_d():
 
 
 if __name__ == "__main__":
-    """run = True
+    run = True
     print('command info:\n')
     print('task a: Forward and backward in straight lines or with different steering angles\n')
     print('task b: Parallel-parking left and right\n')
@@ -352,10 +352,4 @@ if __name__ == "__main__":
             print('Task will be end!')
             run = False
         else:
-            print('Please choose a task(a/b/c/d): ')"""
-    try:
-         # dir_servo_angle_calibration(-10)
-        while 1:
-            test()
-    finally:
-        stop()
+            print('Please choose a task(a/b/c/d): ')
