@@ -31,7 +31,7 @@ S1 = ADC('A1')
 S2 = ADC('A2')
 
 Servo_dir_flag = 1
-dir_cal_value = 15
+dir_cal_value = 0
 cam_cal_value_1 = 0
 cam_cal_value_2 = 0
 motor_direction_pins = [left_rear_dir_pin, right_rear_dir_pin]
@@ -322,8 +322,9 @@ def maneuvering_c(cmd):
 
 
 def maneuvering_d():
+    # back to initial state
     stop()
-    set_dir_servo_angle(15)
+    set_dir_servo_angle(0)
 
 
 if __name__ == "__main__":
@@ -332,7 +333,7 @@ if __name__ == "__main__":
     print('task a: Forward and backward in straight lines or with different steering angles\n')
     print('task b: Parallel-parking left and right\n')
     print('task c: Three-point turning (K-turning) with initial turn to the left or right\n')
-    print('task d: Stop the car and back to initial state')
+    print('task d: Stop the car and back to initial state\n')
     print('task e: End the whole task')
     while run:
         cmd = input('Please choose a task(a/b/c/d/e): ')
