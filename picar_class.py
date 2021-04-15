@@ -145,26 +145,270 @@ class picar:
         # print(cm)
         return cm
 
-    def test(self):
-        # dir_servo_angle_calibration(-10)
-        self.set_dir_servo_angle(-40)
-        # time.sleep(1)
-        # set_dir_servo_angle(0)
-        # time.sleep(1)
-        # set_motor_speed(1, 1)
-        # set_motor_speed(2, 1)
-        # camera_servo_pin.angle(0)
+    def maneuvering_a(self, cmd):
+        # forward
+        if cmd == 'forward':
+            # set_dir_servo_angle(0)
+            self.forward(50)
+        # backward
+        elif cmd == 'backward':
+            self.backward(50)
+        # forward turn right
+        elif cmd == 'fright':
+            self.set_dir_servo_angle(30)
+            self.forward(50, 30)
+        # forward turn left
+        elif cmd == 'fleft':
+            self.set_dir_servo_angle((-30))
+            self.forward(50, (-30))
+        # backward turn right
+        elif cmd == 'bright':
+            self.set_dir_servo_angle(30)
+            self.backward(50, 30)
+        # backward turn left
+        elif cmd == 'bleft':
+            self.set_dir_servo_angle((-30))
+            self.backward(50, (-30))
+
+        # stop
+        elif cmd == 'stop':
+            self.stop()
+
+    def maneuvering_b(self, cmd):
+        # parallel-parking left
+        if cmd == 'left':
+            # initial servo angle
+            self.set_dir_servo_angle(0)
+            # go forward and turn left
+            self.forward(50)
+            self.set_dir_servo_angle((-30))
+            time.sleep(1)
+            # turn right
+            self.set_dir_servo_angle(30)
+            time.sleep(1)
+            # back to initial state
+            self.stop()
+            self.set_dir_servo_angle(0)
+        elif cmd == 'right':
+            # initial servo angle
+            self.set_dir_servo_angle(0)
+            # go forward and turn left
+            self.forward(50)
+            self.set_dir_servo_angle(30)
+            time.sleep(1)
+            # turn right
+            self.set_dir_servo_angle((-30))
+            time.sleep(1)
+            # back to initial state
+            self.stop()
+            self.set_dir_servo_angle(0)
+        else:
+            self.stop()
+            self.set_dir_servo_angle(0)
+            print('please re-type command(left/right)')
+
+    def maneuvering_c(self, cmd):
+        # k turn
+        if cmd == 'left':
+            # initial servo angle
+            self.set_dir_servo_angle(0)
+            # go first step
+            self.set_dir_servo_angle((-30))
+            self.forward(50)
+            time.sleep(1)
+            # go second step
+            self.stop()
+            self.set_dir_servo_angle(30)
+            self.backward(50)
+            time.sleep(1)
+            # third step
+            self.stop()
+            self.set_dir_servo_angle((-10))
+            self.forward(50)
+            time.sleep(1)
+            self.set_dir_servo_angle(0)
+            time.sleep(1)
+            # back to initial state
+            self.stop()
+            self.set_dir_servo_angle(0)
+
+        elif cmd == 'right':
+            # initial servo angle
+            self.set_dir_servo_angle(0)
+            # go first step
+            self.set_dir_servo_angle(30)
+            self.forward(50)
+            time.sleep(1)
+            # go second step
+            self.stop()
+            self.set_dir_servo_angle((-30))
+            self.backward(50)
+            time.sleep(1)
+            # third step
+            self.stop()
+            self.set_dir_servo_angle(10)
+            self.forward(50)
+            time.sleep(1)
+            self.set_dir_servo_angle(0)
+            time.sleep(1)
+            # back to initial state
+            self.stop()
+            self.set_dir_servo_angle(0)
+
+    def maneuvering_d(self):
+        # back to initial state
+        self.stop()
+        self.set_dir_servo_angle(0)
 
     def cleanup(self):
         self.set_motor_speed(1, 0)
         self.set_motor_speed(2, 0)
 
 
+class sensor:
+    def __init__(self, adc):
+        """
+        :param adc: The ADC class
+        """
+        self.adc = adc
+        self.output = None
+
+    def sensor_read(self):
+        adc_A0 = self.adc("A0")
+        adc_A1 = self.adc("A1")
+        adc_A2 = self.adc("A2")
+        self.output = [adc_A0.read(), adc_A1.read(), adc_A2.read()]
+
+        return self.output
+
+
+class interpreter:
+
+    def __init__(self, sensitivity=None, polarity=None):
+        """
+        :param sensitivity: how different “dark” and “light” readings are expected to be
+        :param polarity: is the line the system is following darker or lighter than the surrounding floor
+        """
+        self.senstvt = sensitivity
+        self.plart = polarity
+
+    def main(self, data):
+        """
+        :param data: it is a list [float, float, float]
+        :return:
+        """
+        left = data[0]
+        center = data[1]
+        right = data[2]
+
+        if self.plart > 0:
+            # darker than the surrounding floor
+            if left < self.senstvt < center and right < self.senstvt:
+                result = 'center'
+                pos = 0
+            elif left < self.senstvt < right and center < self.senstvt:
+                result = 'right'
+                pos = -(abs(right - self.senstvt) / self.senstvt)
+            elif left > self.senstvt > center and right < self.senstvt:
+                result = 'left'
+                pos = abs(left - self.senstvt) / self.senstvt
+            else:
+                result = 'None'
+                pos = 'None'
+        else:
+            # lighter than the surrounding floor
+            if left > self.senstvt > center and right > self.senstvt:
+                result = 'center'
+                pos = 0
+            elif left > self.senstvt > right and center > self.senstvt:
+                result = 'right'
+                pos = -(abs(right - self.senstvt) / self.senstvt)
+            elif left < self.senstvt < center and right > self.senstvt:
+                result = 'left'
+                pos = abs(left - self.senstvt) / self.senstvt
+            else:
+                result = 'None'
+                pos = 'None'
+
+        return result, pos
+
+
+class controller:
+
+    def __init__(self, picar, scale):
+        """
+        :param scale: scaling factor
+        """
+        self.scale = scale
+        self.picarx = picar
+
+    def main(self, res, pos):
+        if res == 'center':
+            print('The car is running on the center line')
+            self.picarx.set_dir_servo_angle(pos)
+            return pos
+        elif res == 'left':
+            print('The car is running offset the center, need to turn left')
+            self.picarx.set_dir_servo_angle(pos * self.scale / 90)
+            return pos * self.scale / 90
+        elif res == 'right':
+            print('The car is running offset the center, need to turn right')
+            self.picarx.set_dir_servo_angle(pos * self.scale / 90)
+            return pos * self.scale / 90
+        else:
+            print('The car is running in unknown environment')
+            self.picarx.set_dir_servo_angle(0)
+            return 0
+
+
+def Motor_commands(picar_x):
+    # Assignment two
+    run = True
+    print('command info:\n')
+    print('task a: Forward and backward in straight lines or with different steering angles\n')
+    print('task b: Parallel-parking left and right\n')
+    print('task c: Three-point turning (K-turning) with initial turn to the left or right\n')
+    print('task d: Stop the car and back to initial state\n')
+    print('task e: End the whole task\n')
+    while run:
+        cmd = input('Please choose a task(a/b/c/d/e): ')
+        if cmd == 'a':
+            d_cmd = input('Choose a command(forward/backward/fleft/fright/bleft/bright): ')
+            picar_x.maneuvering_a(d_cmd)
+        elif cmd == 'b':
+            d_cmd = input('Choose a command(left/right): ')
+            picar_x.maneuvering_b(d_cmd)
+        elif cmd == 'c':
+            d_cmd = input('Choose a command(left/right): ')
+            picar_x.maneuvering_c(d_cmd)
+        elif cmd == 'd':
+            picar_x.maneuvering_d()
+        elif cmd == 'e':
+            picar_x.stop()
+            picar_x.set_dir_servo_angle(0)
+            print('Task will be end!')
+            run = False
+        else:
+            print('Please choose a task(a/b/c/d): ')
+
+
+def Sensors_and_control(sensr, interpt, cnto):
+    data = sensr.sensor_read()
+    text, position = interpt.main(data)
+    angle = cnto.main(text, position)
+    print('The angle is {}'.format(angle))
+
+
 if __name__ == "__main__":
-    pass
-"""     try:
-         # dir_servo_angle_calibration(-10)
-         while 1:
-             test()
-     finally:
-         stop()"""
+    picarx = picar(Servo, PWM, Pin)
+    sensorx = sensor(ADC)
+    interpreterx = interpreter(sensitivity=2048, polarity=2048)
+    controllerx = controller(picarx, scale=2)
+    print('Which assignment you want to test?\n')
+    print('First: Motor commands\n')
+    print('Second: Sensors and control\n')
+    index = input('Please enter the name of assignment(full name, include space, capitalization): ')
+    if index == 'Motor commands':
+        Motor_commands(picarx)
+    elif index == 'Sensors and control':
+        Sensors_and_control(sensorx, interpreterx, controllerx)
