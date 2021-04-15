@@ -392,11 +392,13 @@ def Motor_commands(picar_x):
             print('Please choose a task(a/b/c/d): ')
 
 
-def Sensors_and_control(sensr, interpt, cnto):
-    data = sensr.sensor_read()
-    text, position = interpt.main(data)
-    angle = cnto.main(text, position)
-    print('The angle is {}'.format(angle))
+def Sensors_and_control(sensr, interpt, cnto, run=True):
+    while run:
+        data = sensr.sensor_read()
+        text, position = interpt.main(data)
+        angle = cnto.main(text, position)
+        print('The angle is {}'.format(angle))
+        time.sleep(1)
 
 
 if __name__ == "__main__":
@@ -412,3 +414,5 @@ if __name__ == "__main__":
         Motor_commands(picarx)
     elif index == 'Sensors and control':
         Sensors_and_control(sensorx, interpreterx, controllerx)
+    else:
+        pass
