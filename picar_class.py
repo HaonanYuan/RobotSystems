@@ -395,6 +395,8 @@ def Motor_commands(picar_x):
 def Sensors_and_control(sensr, interpt, cnto, run=True):
     while run:
         data = sensr.sensor_read()
+        print('The value of each I/O: {}'.format(data))
+        time.sleep(1)
         text, position = interpt.main(data)
         angle = cnto.main(text, position)
         print('The angle is {}'.format(angle))
@@ -404,7 +406,6 @@ def Sensors_and_control(sensr, interpt, cnto, run=True):
 if __name__ == "__main__":
     picarx = picar(Servo, PWM, Pin)
     sensorx = sensor(ADC)
-    interpreterx = interpreter(sensitivity=2048, polarity=2048)
     controllerx = controller(picarx, scale=2)
     print('Which assignment you want to test?\n')
     print('First: Motor commands\n')
@@ -413,6 +414,9 @@ if __name__ == "__main__":
     if index == 'Motor commands':
         Motor_commands(picarx)
     elif index == 'Sensors and control':
+        sensitivity = input('Please enter the value of sensitivity: ')
+        polarity = input('Please enter the value of polarity: ')
+        interpreterx = interpreter(sensitivity, polarity)
         Sensors_and_control(sensorx, interpreterx, controllerx)
     else:
         pass
