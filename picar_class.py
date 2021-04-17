@@ -406,7 +406,7 @@ def Sensors_and_control(sensr, interpt, cnto, run=True):
 if __name__ == "__main__":
     picarx = picar(Servo, PWM, Pin)
     sensorx = sensor(ADC)
-    controllerx = controller(picarx, scale=2)
+    controllerx = controller(picarx, scale=1200)
     print('Which assignment you want to test?\n')
     print('First: Motor commands\n')
     print('Second: Sensors and control\n')
