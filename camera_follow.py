@@ -35,7 +35,7 @@ class HandCodedLaneFollower(object):
                                                             len(lane_lines))
 
         if self.car is not None:
-            self.car.front_wheels.turn(self.curr_steering_angle)
+            self.car.set_dir_servo_angle(self.curr_steering_angle)
         curr_heading_image = display_heading_line(frame, self.curr_steering_angle)
         show_image("heading", curr_heading_image)
 
@@ -168,7 +168,7 @@ def compute_steering_angle(frame, lane_lines):
     """
     if len(lane_lines) == 0:
         logging.info('No lane lines detected, do nothing')
-        return -90
+        return 0
 
     height, width, _ = frame.shape
     if len(lane_lines) == 1:
@@ -187,7 +187,7 @@ def compute_steering_angle(frame, lane_lines):
 
     angle_to_mid_radian = math.atan(x_offset / y_offset)  # angle (in radian) to center vertical line
     angle_to_mid_deg = int(angle_to_mid_radian * 180.0 / math.pi)  # angle (in degrees) to center vertical line
-    steering_angle = angle_to_mid_deg + 90  # this is the steering angle needed by picar front wheel
+    steering_angle = angle_to_mid_deg  # this is the steering angle needed by picar front wheel
 
     logging.debug('new steering angle: %s' % steering_angle)
     return steering_angle
