@@ -9,6 +9,9 @@ except ImportError:
     from sim_ezblock import *
 
 import time
+import cv2
+from camera_follow import HandCodedLaneFollower
+import datetime
 
 
 class picar:
@@ -407,6 +410,40 @@ def Sensors_and_control(sensr, interpt, cnto, run=True):
         time.sleep(1)
 
 
+def Camera_based_driving(pic, cam, fou, lanefollower):
+    pic.forward(40)
+    cam.set(3, 320)
+    cam.set(4, 240)
+    # datestr = datetime.datetime.now().strftime("%y%m%d_%H%M%S")
+    video_orig = cv2.VideoWriter('../data/tmp/car_video.avi', fou, 20, (320, 240))
+    video_lane = cv2.VideoWriter('../data/tmp/car_video_lane.avi', fou, 20, (320, 240))
+    # video_objs = cv2.VideoWriter('../data/tmp/car_video_objs.avi', fou, 20, (320, 240))
+    i = 0
+    while cam.isOpened():
+        _, image_lane = cam.read()
+        image_objs = image_lane.copy()
+        i += 1
+        video_orig.write(image_lane)
+
+        """image_objs = process_objects_on_road(image_objs)
+        video_objs.write(image_objs)
+        show_image('Detected Objects', image_objs)"""
+
+        image_lane = lanefollower.follow_lane(image_lane)
+        video_lane.write(image_lane)
+        cv2.imshow('Lane Lines', image_lane)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            """self.back_wheels.speed = 0
+            self.front_wheels.turn(90)"""
+            cam.release()
+            video_orig.release()
+            video_lane.release()
+            # video_objs.release()
+            cv2.destroyAllWindows()
+            break
+
+
 if __name__ == "__main__":
     picarx = picar(Servo, PWM, Pin)
     sensorx = sensor(ADC)
@@ -414,6 +451,7 @@ if __name__ == "__main__":
     print('Which assignment you want to test?\n')
     print('First: Motor commands\n')
     print('Second: Sensors and control\n')
+    print('Third: Camera based driving\n')
     index = input('Please enter the name of assignment(full name, include space, capitalization): ')
     if index == 'Motor commands':
         Motor_commands(picarx)
@@ -422,5 +460,10 @@ if __name__ == "__main__":
         polarity = input('Please enter the value of polarity: ')
         interpreterx = interpreter(int(sensitivity), int(polarity))
         Sensors_and_control(sensorx, interpreterx, controllerx)
+    elif index == 'Camera based driving':
+        hand = HandCodedLaneFollower
+        camera = cv2.VideoCapture
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        Camera_based_driving(picarx, camera, fourcc, hand)
     else:
         pass
