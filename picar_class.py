@@ -284,7 +284,7 @@ class sensor:
 
 class interpreter:
 
-    def __init__(self, sensitivity=None, polarity=None):
+    def __init__(self, sensitivity=1000, polarity=1):
         """
         :param sensitivity: how different “dark” and “light” readings are expected to be
         :param polarity: is the line the system is following darker or lighter than the surrounding floor
@@ -303,13 +303,13 @@ class interpreter:
 
         if self.plart > 0:
             # darker than the surrounding floor
-            if left < self.senstvt < center and right < self.senstvt:
+            if center < self.senstvt < left and self.senstvt < right:
                 result = 'center'
                 pos = 0
-            elif left < self.senstvt < right and center < self.senstvt:
+            elif right < self.senstvt < left and self.senstvt < center:
                 result = 'right'
                 pos = -(abs(right - self.senstvt) / self.senstvt)
-            elif left > self.senstvt > center and right < self.senstvt:
+            elif center > self.senstvt > left and self.senstvt < right:
                 result = 'left'
                 pos = abs(left - self.senstvt) / self.senstvt
             else:
@@ -317,13 +317,13 @@ class interpreter:
                 pos = 'None'
         else:
             # lighter than the surrounding floor
-            if left > self.senstvt > center and right > self.senstvt:
+            if center > self.senstvt > right and self.senstvt > left:
                 result = 'center'
                 pos = 0
-            elif left > self.senstvt > right and center > self.senstvt:
+            elif right > self.senstvt > left and self.senstvt > center:
                 result = 'right'
                 pos = -(abs(right - self.senstvt) / self.senstvt)
-            elif left < self.senstvt < center and right > self.senstvt:
+            elif center < self.senstvt < left and self.senstvt > right:
                 result = 'left'
                 pos = abs(left - self.senstvt) / self.senstvt
             else:
@@ -416,7 +416,7 @@ if __name__ == "__main__":
     elif index == 'Sensors and control':
         sensitivity = input('Please enter the value of sensitivity: ')
         polarity = input('Please enter the value of polarity: ')
-        interpreterx = interpreter(sensitivity, polarity)
+        interpreterx = interpreter(int(sensitivity), int(polarity))
         Sensors_and_control(sensorx, interpreterx, controllerx)
     else:
         pass
