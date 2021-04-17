@@ -289,8 +289,8 @@ class interpreter:
         :param sensitivity: how different “dark” and “light” readings are expected to be
         :param polarity: is the line the system is following darker or lighter than the surrounding floor
         """
-        self.senstvt = sensitivity
-        self.plart = polarity
+        self.senstvt = int(sensitivity)
+        self.plart = int(polarity)
 
     def main(self, data):
         """
