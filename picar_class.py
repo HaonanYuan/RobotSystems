@@ -462,7 +462,7 @@ if __name__ == "__main__":
         Sensors_and_control(sensorx, interpreterx, controllerx)
     elif index == 'Camera based driving':
         hand = HandCodedLaneFollower(car=picarx)
-        camera = cv2.VideoCapture(-1)
+        camera = cv2.VideoCapture(0)
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
         Camera_based_driving(picarx, camera, fourcc, hand)
     else:
