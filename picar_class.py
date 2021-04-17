@@ -349,12 +349,12 @@ class controller:
             return pos
         elif res == 'left':
             print('The car is running offset the center, need to turn left')
-            self.picarx.set_dir_servo_angle(pos * self.scale / 90)
-            return pos * self.scale / 90
+            self.picarx.set_dir_servo_angle(-pos * self.scale / 90)
+            return -pos * self.scale / 90
         elif res == 'right':
             print('The car is running offset the center, need to turn right')
-            self.picarx.set_dir_servo_angle(pos * self.scale / 90)
-            return pos * self.scale / 90
+            self.picarx.set_dir_servo_angle(-pos * self.scale / 90)
+            return -pos * self.scale / 90
         else:
             print('The car is running in unknown environment')
             self.picarx.set_dir_servo_angle(0)
@@ -406,7 +406,7 @@ def Sensors_and_control(sensr, interpt, cnto, run=True):
 if __name__ == "__main__":
     picarx = picar(Servo, PWM, Pin)
     sensorx = sensor(ADC)
-    controllerx = controller(picarx, scale=1200)
+    controllerx = controller(picarx, scale=12000)
     print('Which assignment you want to test?\n')
     print('First: Motor commands\n')
     print('Second: Sensors and control\n')
