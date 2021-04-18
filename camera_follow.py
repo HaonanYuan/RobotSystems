@@ -13,7 +13,7 @@ class HandCodedLaneFollower(object):
     def __init__(self, car=None):
         logging.info('Creating a HandCodedLaneFollower...')
         self.car = car
-        self.curr_steering_angle = 90
+        self.curr_steering_angle = 0
 
     def follow_lane(self, frame):
         # Main entry point of the lane follower
