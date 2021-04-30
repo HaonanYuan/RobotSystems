@@ -2,6 +2,7 @@ import concurrent.futures
 from threading import Lock
 import time
 from picar_class import picar
+import rossros as ros
 
 try:
     from ezblock import *
@@ -12,10 +13,11 @@ except ImportError:
     from sim_ezblock import *
 
 
-class sensor_values_bus(object):
+class Bus:
 
-    def __init__(self):
-        self.message = [0, 1, 0]
+    def __init__(self, message=None, name='unnamed bus'):
+        self.message = message
+        self.name = name
 
     def write(self, value):
         self.message = value
@@ -26,10 +28,6 @@ class sensor_values_bus(object):
 
 def sensor_producer(sen, value=None):
     sen.write(value)
-
-
-def sensor_consumer(sen):
-    return sen.read()
 
 
 def sensor_con_pro(sensor, delay):
@@ -44,20 +42,6 @@ def sensor_con_pro(sensor, delay):
         time.sleep(delay)
 
 
-class interpreter_bus:
-
-    def __init__(self, sensitivity=1000, polarity=1):
-        self.sensi = sensitivity
-        self.plart = polarity
-        self.message = ['center', 0]
-
-    def write(self, value):
-        self.message = value
-
-    def read(self):
-        return self.message
-
-
 def inter_producer(inter, value=None):
     inter.write(value)
 
@@ -67,37 +51,37 @@ def inter_consumer(inter):
     return value
 
 
-def inter_con_pro(sensor, interpreter, delay):
+def inter_con_pro(sensor, interpreter, delay, sensi=1000, plart=1):
     while True:
         left = sensor.read()[0]
         center = sensor.read()[1]
         right = sensor.read()[2]
 
-        if interpreter.plart > 0:
+        if plart > 0:
             # darker than the surrounding floor
-            if center < interpreter.sensi < left and interpreter.sensi < right:
+            if center < sensi < left and sensi < right:
                 result = 'center'
                 pos = 0
-            elif right < interpreter.sensi < left and interpreter.sensi < center:
+            elif right < sensi < left and sensi < center:
                 result = 'right'
-                pos = -(abs(right - interpreter.sensi) / interpreter.sensi)
-            elif center > interpreter.sensi > left and interpreter.sensi < right:
+                pos = -(abs(right - sensi) / sensi)
+            elif center > sensi > left and sensi < right:
                 result = 'left'
-                pos = abs(left - interpreter.sensi) / interpreter.sensi
+                pos = abs(left - sensi) / sensi
             else:
                 result = 'None'
                 pos = 0
         else:
             # lighter than the surrounding floor
-            if center > interpreter.sensi > right and interpreter.sensi > left:
+            if center > sensi > right and sensi > left:
                 result = 'center'
                 pos = 0
-            elif right > interpreter.sensi > left and interpreter.sensi > center:
+            elif right > sensi > left and sensi > center:
                 result = 'right'
-                pos = -(abs(interpreter.sensi) / interpreter.sensi)
-            elif center < interpreter.sensi < left and interpreter.sensi > right:
+                pos = -(abs(sensi) / sensi)
+            elif center < sensi < left and sensi > right:
                 result = 'left'
-                pos = abs(left - interpreter.sensi) / interpreter.sensi
+                pos = abs(left - sensi) / sensi
             else:
                 result = 'None'
                 pos = 0
@@ -105,44 +89,32 @@ def inter_con_pro(sensor, interpreter, delay):
         time.sleep(delay)
 
 
-class control_bus:
-
-    def __init__(self, message=None):
-        self.picarx = picar(Servo, PWM, Pin)
-        self.message = message
-
-    def write(self, value):
-        self.message = value
-
-    def read(self):
-        return self.message
-
-
 def control_con_pro(interpreter, control, delay):
     while True:
         if interpreter.read()[0] == 'center':
             print('The car is running on the center line')
-            control.picarx.set_dir_servo_angle(interpreter.read()[1])
-            control.picarx.forward(50)
+            control.set_dir_servo_angle(interpreter.read()[1])
+            control.forward(50)
             time.sleep(delay)
             return interpreter.read()[1]
+
         elif interpreter.read()[0] == 'left':
             print('The car is running offset the center, need to turn left')
-            control.picarx.set_dir_servo_angle(-interpreter.read()[1] * control.scale / 90)
-            control.picarx.forward(50)
+            control.set_dir_servo_angle(-interpreter.read()[1] * control.scale / 90)
+            control.forward(50)
             time.sleep(delay)
             return -interpreter.read()[1] * control.scale / 90
 
         elif interpreter.read()[0] == 'right':
             print('The car is running offset the center, need to turn right')
-            control.picarx.set_dir_servo_angle(-interpreter.read()[1] * control.scale / 90)
-            control.picarx.forward(50)
+            control.set_dir_servo_angle(-interpreter.read()[1] * control.scale / 90)
+            control.forward(50)
             time.sleep(delay)
             return -interpreter.read()[1] * control.scale / 90
         else:
             print('The car is running in unknown environment')
-            control.picarx.set_dir_servo_angle(0)
-            control.picarx.forward(0)
+            control.set_dir_servo_angle(0)
+            control.forward(0)
             time.sleep(delay)
             return 0
 
@@ -150,7 +122,12 @@ def control_con_pro(interpreter, control, delay):
 if __name__ == "__main__":
     sensor_delay = 1
     interpreter_delay = 1
-    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-        eSensor = executor.submit(sensor_con_pro, sensor_values_bus(), sensor_delay)
-        eInterpreter = executor.submit(inter_con_pro, sensor_values_bus(), interpreter_bus(), interpreter_delay)
+    control_delay = 1
+    sensor_bus = Bus(name='sensor')
+    interpreter_bus = Bus(name='interpreter')
+    control_bus = Bus(name='control')
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+        eSensor = executor.submit(sensor_con_pro, sensor_bus, sensor_delay)
+        eInterpreter = executor.submit(inter_con_pro, sensor_bus, interpreter_bus, interpreter_delay)
+        eControl = executor.submit(control_con_pro, interpreter_bus, picar(Servo, PWM, Pin), control_delay)
     eSensor.result()
