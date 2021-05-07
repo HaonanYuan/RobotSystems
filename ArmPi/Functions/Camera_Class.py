@@ -13,14 +13,11 @@ from ArmIK.ArmMoveIK import *
 import HiwonderSDK.Board as Board
 from CameraCalibration.CalibrationConfig import *
 
-if sys.version_info.major == 2:
-    print('Please run this program with python3!')
-    sys.exit(0)
-
 
 class Camera_class:
 
     def __init__(self):
+        self.check_version()
         self.AK = ArmIK()
 
         # set the color which can be identify
@@ -32,7 +29,7 @@ class Camera_class:
             'white': (255, 255, 255),
         }
 
-        self.__target_color = 'red'
+        self.__target_color = ('red')
         # The angle of gripper in closed state
         self.servo1 = 500
         # Initial parameter
@@ -55,14 +52,20 @@ class Camera_class:
         self.unreachable = False
         self.world_X, self.world_Y = 0, 0
         self.world_x, self.world_y = 0, 0
-        # Running the move function
-        self.th = threading.Thread(target=self.move)
-        self.th.setDaemon(True)
-        self.th.start()
-
         self.t1 = 0
         self.roi = ()
         self.last_x, self.last_y = 0, 0
+
+    # Running the move function
+    def running_move(self):
+        th = threading.Thread(target=self.move)
+        th.setDaemon(True)
+        th.start()
+
+    def check_version(self):
+        if sys.version_info.major == 2:
+            print('Please run this program with python3!')
+            sys.exit(0)
 
     # set the identify color
     def setTargetColor(self, target_color):
@@ -85,8 +88,7 @@ class Camera_class:
         # return the index of contour and the area of contour
         return area_max_contour, contour_area_max
 
-        # The initial state
-
+    # The initial state
     def initMove(self):
         Board.setBusServoPulse(1, self.servo1 - 50, 300)
         Board.setBusServoPulse(2, 500, 500)
@@ -370,6 +372,7 @@ if __name__ == '__main__':
     cam.init()
     cam.start()
     cam.__target_color = ('red',)
+    cam.running_move()
     my_camera = Camera.Camera()
     my_camera.camera_open()
     while True:
