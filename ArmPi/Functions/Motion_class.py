@@ -11,7 +11,7 @@ class motion:
         self.servo = 500
         self.servo2 = 500
 
-    def gripper_controller(self, angle):
+    def gripper_controller(self, angle=0):
         Board.setBusServoPulse(1, self.servo + angle, 500)  # open the gripper
         time.sleep(1)
 
@@ -24,9 +24,10 @@ class motion:
             Board.setBusServoPulse(2, servo2_angle, 500)
         time.sleep(1)
 
-    def arm_controller(self, world_X, world_Y, distance):
-        result = self.AK.setPitchRangeMoving((world_X, world_Y, distance), -90, -90, 0, 1000)  # raise hand
+    def arm_controller(self, world_X, world_Y, distance, alpha, alpha1, alpha2, movetime=None):
+        result = self.AK.setPitchRangeMoving((world_X, world_Y, distance), alpha, alpha1, alpha2, movetime)  # raise hand
         time.sleep(result[2] / 1000)
+        return result
 
 
 if __name__ == '__main__':
