@@ -212,65 +212,77 @@ class Handpose:
                 # Turn left
                 self.servo6 = self.servo6 + 20
                 Board.setBusServoPulse(6, self.servo6, 500)
+                print('Turn Left')
             elif fig_num == 3:
                 # Turn right
                 self.servo6 = self.servo6 - 20
                 Board.setBusServoPulse(6, self.servo6, 500)
+                print('Turn Right')
             else:
                 Board.setBusServoPulse(6, self.servo6, 500)
                 self.choose_arm_sig = None
                 self.choose_palm_sig = None
+                print('Back to choose link')
                 self.mot.setBuzzer(0.5)
                 self.mot.setBuzzer(0.5)
                 time.sleep(1)
         elif self.servo_num == 5:
             # control the servo 5, the second joint
             if fig_num == 2:
-                # raise arm
+                # raise the arm
                 self.servo5 = self.servo5 + 20
                 Board.setBusServoPulse(5, self.servo5, 500)
+                print('Get Lower')
             elif fig_num == 3:
                 # Lower the arm
                 self.servo5 = self.servo5 - 20
                 Board.setBusServoPulse(5, self.servo5, 500)
+                print('Get Higher')
             else:
                 Board.setBusServoPulse(5, self.servo5, 500)
                 self.choose_arm_sig = None
                 self.choose_palm_sig = None
+                print('Back to choose link')
                 self.mot.setBuzzer(0.5)
                 self.mot.setBuzzer(0.5)
                 time.sleep(1)
         elif self.servo_num == 4:
             # control the servo 4, the third joint
             if fig_num == 2:
-                # raise arm
+                # lower the arm
                 self.servo4 = self.servo4 + 20
                 Board.setBusServoPulse(4, self.servo4, 500)
+                print('Get Lower')
             elif fig_num == 3:
-                # Lower the arm
+                # raise the arm
                 self.servo4 = self.servo4 - 20
                 Board.setBusServoPulse(4, self.servo4, 500)
+                print('Get Higher')
             else:
                 Board.setBusServoPulse(4, self.servo4, 500)
                 self.choose_arm_sig = None
                 self.choose_palm_sig = None
+                print('Back to choose link')
                 self.mot.setBuzzer(0.5)
                 self.mot.setBuzzer(0.5)
                 time.sleep(1)
         elif self.servo_num == 3:
             # control the servo 3, the forth joint
             if fig_num == 2:
-                # raise arm
+                # lower the arm
                 self.servo3 = self.servo3 + 20
                 Board.setBusServoPulse(3, self.servo3, 500)
+                print('Get Higher')
             elif fig_num == 3:
-                # Lower the arm
+                # raise the arm
                 self.servo3 = self.servo3 - 20
                 Board.setBusServoPulse(3, self.servo3, 500)
+                print('Get Lower')
             else:
                 Board.setBusServoPulse(3, self.servo3, 500)
                 self.choose_arm_sig = None
                 self.choose_palm_sig = None
+                print('Back to choose link')
                 self.mot.setBuzzer(0.5)
                 self.mot.setBuzzer(0.5)
                 time.sleep(1)
@@ -280,14 +292,17 @@ class Handpose:
                 # clockwise rotate the palm
                 self.servo2 = self.servo2 + 20
                 Board.setBusServoPulse(2, self.servo2, 500)
+                print('Rotate the arm clockwise')
             elif fig_num == 3:
                 # counter-clockwise rotate the palm
                 self.servo2 = self.servo2 - 20
                 Board.setBusServoPulse(2, self.servo2, 500)
+                print('Rotate the arm counter-clockwise')
             else:
                 Board.setBusServoPulse(2, self.servo2, 500)
                 self.choose_arm_sig = None
                 self.choose_palm_sig = None
+                print('Back to choose link')
                 self.mot.setBuzzer(0.5)
                 self.mot.setBuzzer(0.5)
                 time.sleep(1)
@@ -297,14 +312,17 @@ class Handpose:
                 # close the gripper
                 self.servo1 = self.servo1 + 20
                 Board.setBusServoPulse(1, self.servo1, 500)
+                print('CLose the gripper')
             elif fig_num == 3:
                 # open the gripper
                 self.servo1 = self.servo1 - 20
                 Board.setBusServoPulse(1, self.servo1, 500)
+                print('Open the gripper')
             else:
                 Board.setBusServoPulse(1, self.servo1, 500)
                 self.choose_arm_sig = None
                 self.choose_palm_sig = None
+                print('Back to choose link')
                 self.mot.setBuzzer(0.5)
                 self.mot.setBuzzer(0.5)
                 time.sleep(1)
