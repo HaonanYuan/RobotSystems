@@ -13,6 +13,7 @@ from ArmIK.ArmMoveIK import *
 import HiwonderSDK.Board as Board
 from CameraCalibration.CalibrationConfig import *
 
+
 if sys.version_info.major == 2:
     print('Please run this program with python3!')
     sys.exit(0)
@@ -354,6 +355,7 @@ def run(img):
         get_roi = False
         frame_gb = getMaskROI(frame_gb, roi, size)
     # Convert the image to LAB space.
+    
     frame_lab = cv2.cvtColor(frame_gb, cv2.COLOR_BGR2LAB)  # 将图像转换到LAB空间
 
     area_max = 0

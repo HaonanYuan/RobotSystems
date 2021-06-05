@@ -15,7 +15,8 @@ class motion:
         # Move arm to initial position
         Board.setBusServoPulse(1, self.servo - 50, 300)
         Board.setBusServoPulse(2, 500, 500)
-        self.AK.setPitchRangeMoving((0, 10, 10), -30, -30, -90, 1500)
+        result = self.AK.setPitchRangeMoving((0, 10, 10), -30, -30, -90, 1500)
+        return result[0]
 
     def setBuzzer(self, timer):
         # Set the buzzer and time
